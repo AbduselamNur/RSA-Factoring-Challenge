@@ -1,25 +1,38 @@
-#!/bin/bash
-# Factorize as many numbers as possible into a product of two smaller numbers.
-if [ $# -ne 1 ]; then
-	echo "Usage: factors <file>" 
-	exit 1
-fi
+#!/usr/bin/python3
+import sys
 
-if [ ! -f $1 ]; then
-	echo "File not Fount"
-	exit 2
-fi
+def factorize(n):
+    # find the smallest factor of n
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return i, n // i
+    # n is prime
+    return n, 1
 
-while read n; do
-p=1
-q=$n
-	for ((i=2; i*i<=n; i++)); do
-		if [ $((n % i)) -eq 0 ]; then
-			p=$i
-			q=$((n / i))
-			break
-		fi
-	done
-	echo "$n=$q*$p"
-done < $1
-	
+def main():
+    # check the number of arguments
+    if len(sys.argv) != 2:
+        print("Usage: factors <file>")
+        exit(1)
+    
+    # open the file
+    try:
+        f = open(sys.argv[1], "r")
+    except FileNotFoundError:
+        print("File not found")
+        exit(2)
+    
+    # read the file line by line
+    for line in f:
+        # convert the line to an integer
+        n = int(line.strip())
+        # factorize the number
+        p, q = factorize(n)
+        # print the result
+        print(f"{n}={q}*{p}")
+    
+    # close the file
+    f.close()
+
+if __name__ == "__main__":
+    main()
