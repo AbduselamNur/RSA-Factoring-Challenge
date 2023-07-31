@@ -44,5 +44,4 @@ This task is the same as task 0, except:
 	* p and q are always prime numbers
 	* There is only one number in the files
 How far can you go in less than 5 seconds?
-
-	=========================================================
+		==========================END===============================
