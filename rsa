@@ -1,32 +1,42 @@
 #!/usr/bin/python3
-"""
-Factorize numbers in a file into a product of two prime numbers
-"""
 import sys
 
+def is_prime(n):
+    if n <= 1:
+        return False
+    if n == 2:
+        return True
+    if n % 2 == 0:
+        return False
+    for i in range(3, int(n**0.5) + 1, 2):
+        if n % i == 0:
+            return False
+    return True
 
-def factorize():
-    """
-    A function to search file and factorize the given set of numbers into two prime numbers (format n = p*q)
-    """
+def factorize(n):
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0 and is_prime(i):
+            return i, n // i
+    return n, 1
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: rsa <file>")
+        exit(1)
+    
     try:
-        file = sys.argv[1]
-        with open(file) as f:
-            for line_number in f:
-                line_number = int(line_number)
-                if line_number % 2 == 0:
-                        print("{}={}*{}".format(line_number, line_number // 2, 2))
-                        continue
-                i = 3
-                while i < line_number // 2:
-                    if line_number % i == 0:
-                        print("{}={}*{}".format(line_number, line_number // i, i))
-                        break
-                    i = i + 2
-                if i == (line_number // 2) + 1:
-                    print("{}={}*{}".format(line_number, line_number, 1))
-    except (IndexError):
-        pass
+        f = open(sys.argv[1], "r")
+        for line in f:
+            n = int(line.strip())
+            p, q = factorize(n)
+            print(f"{n}={q}*{p}")
+    
+    except FileNotFoundError:
+            print("File not found")
+            exit(2)
+    
+    f.close()
 
+if __name__ == "__main__":
+    main()
 
-factorize()
