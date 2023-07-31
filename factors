@@ -1,29 +1,55 @@
 #!/usr/bin/python3
-"""factorize given set of numbers in a file to product of two small numbers"""
-from sys import argv
+import sys
+import time
+import signal
 
+def factorize(n):
+    # find the smallest factor of n
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return i, n // i
+    # n is prime
+    return n, 1
 
-def factorize(number_to_check):
-    """"find two small numbers that multiply to give a given number"""
-    i = 2
+def timeout_handler(signum, frame):
+    # raise an exception when the time limit is reached
+    raise TimeoutError("Time limit exceeded")
 
-    if number_to_check < 2:
-        return
+def main():
+    # check the number of arguments
+    if len(sys.argv) != 2:
+        print("Usage: factors <file>")
+        exit(1)
     
-    while number_to_check % i:
-        i += 1
-    print("{:.0f}={:.0f}*{:.0f}".format(number_to_check, number_to_check / i, i))
+    # open the file
+    try:
+        f = open(sys.argv[1], "r")
+    except FileNotFoundError:
+        print("File not found")
+        exit(2)
+    
+    # set the signal handler for the alarm signal
+    signal.signal(signal.SIGALRM, timeout_handler)
+    # set the alarm for 5 seconds
+    signal.alarm(5)
 
-if len(argv) != 2:
-    exit()
+    try:
+        # read the file line by line
+        for line in f:
+            # convert the line to an integer
+            n = int(line.strip())
+            # factorize the number
+            p, q = factorize(n)
+            # print the result
+            print(f"{n}={p}*{q}")
+    except TimeoutError as e:
+        # print the error message and exit
+        print(e)
+        exit(3)
+    
+    # close the file
+    f.close()
 
-try:
-    with open(argv[1]) as file:
-        line = file.readline()
+if __name__ == "__main__":
+    main()
 
-        while line != "":
-            number_to_check = int(line.split('\n')[0])
-            factorize(number_to_check)
-            line = file.readline()
-except:
-    pass
